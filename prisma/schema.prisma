@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITOR
+  VIEWER
+}
+
+enum PublishStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MediaKind {
+  IMAGE
+  DOCUMENT
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String
+  role          Role      @default(EDITOR)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  blogs         BlogPost[]
+  audits        AuditLog[]
+}
+
+model BlogPost {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  excerpt         String
+  content         String
+  category        String        @default("School")
+  coverImage      String?
+  status          PublishStatus @default(DRAFT)
+  publishedAt     DateTime?
+  scheduledAt     DateTime?
+  authorId        String
+  author          User          @relation(fields: [authorId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Achievement {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  category    String
+  summary     String
+  image       String?
+  status      PublishStatus @default(PUBLISHED)
+  awardedAt   DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model MediaAsset {
+  id          String    @id @default(cuid())
+  title       String
+  url         String
+  alt         String
+  kind        MediaKind @default(IMAGE)
+  mimeType    String
+  sizeBytes   Int
+  width       Int?
+  height      Int?
+  category    String?
+  createdAt   DateTime  @default(now())
+}
+
+model HomepageSection {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  title       String
+  body        String
+  image       String?
+  order       Int      @default(0)
+  enabled     Boolean  @default(true)
+  updatedAt   DateTime @updatedAt
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  name      String
+  email     String?
+  phone     String
+  message   String
+  source    String   @default("website")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id])
+  action    String
+  entity    String
+  entityId  String?
+  ip        String?
+  createdAt DateTime @default(now())
+}
