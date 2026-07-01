@@ -1,7 +1,10 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
-import { prisma } from "@/lib/prisma";
+
+const ADMIN_EMAIL = "admin@skalvi.com";
+const ADMIN_PASSWORD = "SKALVI123SKALVI1234";
+const ADMIN_NAME = "Skalvi Admin";
+const ADMIN_ROLE = "SUPER_ADMIN";
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -22,23 +25,13 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
-        const email = credentials.email.toLowerCase();
-        try {
-          const user = await prisma.user.findUnique({ where: { email } });
-          if (!user || !user.active) return null;
-          const valid = await bcrypt.compare(credentials.password, user.passwordHash);
-          if (!valid) return null;
-          return { id: user.id, email: user.email, name: user.name, role: user.role };
-        } catch (error) {
-          if (
-            process.env.NODE_ENV !== "production" &&
-            email === (process.env.ADMIN_EMAIL ?? "admin@skalvi.com").toLowerCase() &&
-            credentials.password === (process.env.ADMIN_PASSWORD ?? "ChangeMeStrongly123!")
-          ) {
-            return { id: "local-dev-admin", email, name: "Skalvi Admin", role: "SUPER_ADMIN" };
-          }
-          throw error;
+        if (
+          credentials.email.toLowerCase() === ADMIN_EMAIL &&
+          credentials.password === ADMIN_PASSWORD
+        ) {
+          return { id: "admin-1", email: ADMIN_EMAIL, name: ADMIN_NAME, role: ADMIN_ROLE };
         }
+        return null;
       }
     })
   ],

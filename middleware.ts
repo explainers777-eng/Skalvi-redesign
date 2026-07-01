@@ -1,10 +1,17 @@
-// Prototype mode: auth disabled
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { withAuth } from "next-auth/middleware";
 
-export default function middleware(_req: NextRequest) {
-  return NextResponse.next();
-}
+export default withAuth({
+  callbacks: {
+    authorized: ({ token, req }) => {
+      const path = req.nextUrl.pathname;
+      if (path === "/secure-admin") return true;
+      if (path.startsWith("/secure-admin") || path.startsWith("/api/admin")) {
+        return Boolean(token?.role);
+      }
+      return true;
+    }
+  }
+});
 
 export const config = {
   matcher: ["/secure-admin/:path*", "/api/admin/:path*"]
