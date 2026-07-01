@@ -28,8 +28,8 @@ export function Header() {
   }, [open]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-skalvi-purple/10 bg-white/96 shadow-sm backdrop-blur transition-all duration-300">
-      <div className={`hidden bg-skalvi-deep text-white transition-all duration-300 lg:block ${scrolled ? "max-h-0 overflow-hidden opacity-0" : "max-h-12 opacity-100"}`}>
+    <header className="sticky top-0 z-50 border-b border-skalvi-purple/10 bg-white/96 shadow-sm backdrop-blur">
+      <div className={`hidden bg-skalvi-deep text-white transition-[max-height,opacity] duration-300 lg:block ${scrolled ? "max-h-0 overflow-hidden opacity-0" : "max-h-12 opacity-100"}`}>
         <div className="container-shell flex flex-wrap items-center justify-between gap-3 py-2 text-xs md:text-sm">
           <a className="focus-ring inline-flex items-center gap-2" href={`tel:${siteConfig.phone[1].replace(/\s/g, "")}`}>
             <Phone size={14} aria-hidden />
@@ -40,7 +40,7 @@ export function Header() {
           </a>
         </div>
       </div>
-      <div className={`container-shell flex items-center justify-between gap-4 transition-all duration-300 ${scrolled ? "min-h-14 py-1.5 lg:min-h-16 lg:py-2" : "min-h-16 py-3 lg:min-h-[88px]"}`}>
+      <div className={`container-shell flex items-center justify-between gap-4 transition-[min-height,padding] duration-300 ${scrolled ? "min-h-14 py-1.5 lg:min-h-16 lg:py-2" : "min-h-16 py-3 lg:min-h-[88px]"}`}>
         <Link className="focus-ring flex items-center gap-3" href="/">
           <Image
             src="/images/brand/logo.png"
@@ -48,7 +48,7 @@ export function Header() {
             height={64}
             alt="Skalvi International School logo"
             priority
-            className={`w-auto object-contain transition-all duration-300 ${scrolled ? "h-9 lg:h-12" : "h-10 lg:h-16"}`}
+            className={`w-auto object-contain transition-[height] duration-300 ${scrolled ? "h-9 lg:h-12" : "h-10 lg:h-16"}`}
           />
           <span className="hidden text-sm font-bold uppercase leading-tight text-skalvi-purple xl:block">
             Skalvi
